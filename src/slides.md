@@ -237,4 +237,9 @@ npx numbl                          % interactive REPL
 
 Jeremy Magland and Dan Fortunato
 
-Initial inspiration from [runmat](https://github.com/runmat-org/runmat).
+We welcome feedback and contributions!
+
+- [numbl.org](https://numbl.org)
+- [github.com/mip-org/mip-core](https://github.com/mip-org/mip-core)
+
+Initial inspiration for numbl from [runmat](https://github.com/runmat-org/runmat).
