@@ -9,7 +9,7 @@ CCM Brown Bag Lunch
 ## Why MATLAB?
 
 - Interactive, intuitive syntax for numerical work
-- Excellent built-in linear algebra and FFTs
+- Excellent built-in linear algebra
 - Large existing codebase in applied math and engineering
 - Plotting and visualization just work
 
@@ -30,7 +30,8 @@ fprintf('residual: %e\n', norm(A*x - b));
 - Most of us use Python, Julia, or other languages, and for good reason
 - But MATLAB is still widely used in applied math and engineering
 - Important existing code is written in MATLAB (e.g., chebfun)
-- Not bolted onto a general-purpose language. Simpler and more direct for numerical work
+- Not bolted onto a general-purpose language
+- Simpler and more direct for numerical work
 
 So what's missing?
 
@@ -38,17 +39,21 @@ So what's missing?
 
 ## The problem
 
-- **No package manager.** Installing dependencies means copying folders and editing paths
-- **Expensive licenses.** Collaborators and reviewers may not have access
-- **Tied to the cloud or desktop.** MATLAB Online exists but runs on a server, not in the browser
-- **MEX distribution is painful.** Precompiled binaries for every platform
+- **No package manager.**
+  - Installing dependencies means copying folders and editing paths
+- **Expensive licenses.**
+  - Collaborators and reviewers may not have access
+- **Tied to the cloud or desktop.**
+  - MATLAB Online exists but runs on a server, not in the browser
+- **MEX distribution is painful.**
+  - Precompiled binaries for every platform
 
 ---
 
 ## Two new tools (early stage, work in progress)
 
 - **mip** - a package manager for MATLAB and MEX
-- **numbl** - an open-source MATLAB that runs in the browser
+- **numbl** - an open-source MATLAB that runs in the browser and on the command line
 
 Complementary and tightly integrated.
 
@@ -84,11 +89,11 @@ Currently published packages include:
 
 An open-source computing environment that runs `.m` files, aiming for MATLAB compatibility.
 
-- Runs in the **browser**. All computation happens locally, no server needed
+- Can run in **browser**. All computation happens locally, no server needed
 - Runs on the **command line**
-- Supports matrices, structs, cell arrays, function handles, classes, complex numbers, sparse arrays, plotting, ...
-- Goal: full MATLAB core syntax and functionality
 - Optional native addon for LAPACK/FFTW performance
+- Supports matrices, structs, cell arrays, function handles, classes, complex numbers, plotting, ...
+- Goal: full MATLAB core syntax and functionality
 
 ---
 
@@ -98,8 +103,8 @@ An open-source computing environment that runs `.m` files, aiming for MATLAB com
 
 Lexer → Parser → Lowering/IR → Codegen → JavaScript
 
-- **Upfront compilation** for main scripts
-- **JIT compilation** for user-defined functions (compiled on first call)
+- **Upfront compilation** including type inference where possible
+- **JIT compilation** when types are not known at compile time
 - Extensive built-in function library
 - Can call WebAssembly and native libraries from `.m` code
 
@@ -109,8 +114,8 @@ Lexer → Parser → Lowering/IR → Codegen → JavaScript
 
 - **mip** - package distribution and dependency management
 - **numbl** - run `.m` code without a license, in the browser or on the command line
-
-numbl uses mip to manage its packages. mip also works directly in MATLAB.
+- numbl uses mip to manage its packages
+- mip also works directly in MATLAB.
 
 ---
 
