@@ -1,17 +1,21 @@
 import { useEffect, useRef } from "react";
 
-interface NumblEmbedProps {
-  script: string;
-}
+type NumblEmbedProps =
+  | { script: string; mode?: never }
+  | { script?: never; mode: "repl" };
 
-export function NumblEmbed({ script }: NumblEmbedProps) {
+export function NumblEmbed(props: NumblEmbedProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     if (!iframeRef.current) return;
-    const encoded = btoa(script);
-    iframeRef.current.src = `https://numbl.org/embed?script=${encoded}&_cb=${Date.now()}`;
-  }, [script]);
+    if (props.mode === "repl") {
+      iframeRef.current.src = `https://numbl.org/embed-repl`;
+    } else {
+      const encoded = btoa(props.script);
+      iframeRef.current.src = `https://numbl.org/embed?script=${encoded}&_cb=${Date.now()}`;
+    }
+  }, [props.mode, props.script]);
 
   return (
     <iframe

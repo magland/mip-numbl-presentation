@@ -32,7 +32,7 @@ export function Slide({ slide }: SlideProps) {
     <div className="slide">
       <div
         ref={containerRef}
-        className="slide-canvas"
+        className={`slide-canvas${slide.layout === "split" ? " slide-canvas-split" : ""}`}
         style={{
           width: DESIGN_W,
           height: DESIGN_H,
@@ -42,13 +42,17 @@ export function Slide({ slide }: SlideProps) {
         {slide.html && (
           <div
             className="slide-content"
-            style={slide.embed ? { marginBottom: "1rem" } : undefined}
+            style={slide.embed && slide.layout !== "split" ? { marginBottom: "1rem" } : undefined}
             dangerouslySetInnerHTML={{ __html: slide.html }}
           />
         )}
         {slide.embed && (
           <div className="slide-embed">
-            <NumblEmbed script={slide.embed.script} />
+            {"mode" in slide.embed ? (
+              <NumblEmbed mode={slide.embed.mode} />
+            ) : (
+              <NumblEmbed script={slide.embed.script} />
+            )}
           </div>
         )}
       </div>

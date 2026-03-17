@@ -19,15 +19,28 @@ marked.use({ renderer });
 
 export interface SlideData {
   html: string;
-  embed?: { script: string };
+  embed?: { script: string } | { mode: "repl" };
+  layout?: "default" | "split";
 }
 
 const EMBED_RE = /```numbl-embed\n([\s\S]*?)```/;
+const REPL_RE = /```numbl-repl\s*```/;
 
 export function parseSlides(raw: string): SlideData[] {
   const sections = raw.split(/\n---\n/);
   return sections.map((section) => {
     const trimmed = section.trim();
+
+    const replMatch = trimmed.match(REPL_RE);
+    if (replMatch) {
+      const withoutRepl = trimmed.replace(REPL_RE, "").trim();
+      return {
+        html: withoutRepl ? (marked.parse(withoutRepl) as string) : "",
+        embed: { mode: "repl" as const },
+        layout: "split" as const,
+      };
+    }
+
     const embedMatch = trimmed.match(EMBED_RE);
     if (embedMatch) {
       const withoutEmbed = trimmed.replace(EMBED_RE, "").trim();

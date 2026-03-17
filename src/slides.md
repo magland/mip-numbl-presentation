@@ -11,7 +11,7 @@ CCM Brown Bag Lunch Talk
 ## Why MATLAB?
 
 - Intuitive syntax purpose-built for numerical work
-- Not bolted onto a general-purpose language — simpler and more direct
+- Not bolted onto a general-purpose language; simpler and more direct
 - Excellent built-in linear algebra
 - Plotting and visualization just work
 
@@ -48,16 +48,29 @@ fprintf('residual: %e\n', norm(A*x - b));
 
 ---
 
-## Two new complementary tools (early stage, work in progress)
+## What about open-source alternatives?
+
+- **GNU Octave** and **Scilab** are free and open-source
+- They solve the licensing problem, but not the others:
+  - Heavy desktop applications with large installs, native dependencies
+  - Cannot run client-side in the browser
+  - No built-in package manager with dependency resolution (AFAIK)
+  - Aging codebases
+
+---
+
+## Two new complementary tools
 
 - **mip** - a package manager for MATLAB and MEX
 - **numbl** - runs .m files in the browser and on the command line
+
+Very lightweight, open-source, early stage
 
 ---
 
 ## mip: a package manager for MATLAB
 
-Pure-MATLAB client, centralized package registry.
+Inspired by **brew** and **pip** — a pure-MATLAB client with a centralized registry.
 
 - `mip install chebfun`
 - `mip load chebfun`
@@ -65,6 +78,9 @@ Pure-MATLAB client, centralized package registry.
 - `mip find-name-collisions`
 
 Handles dependencies, precompiled MEX binaries, and path management.
+
+- Packages are registered in a GitHub repo ([mip-core](https://github.com/mip-org/mip-core))
+- A GitHub Actions workflow builds packages for all supported architectures as they change
 
 ---
 
@@ -76,6 +92,7 @@ Currently published packages include:
 - **chunkie** - integral equations on curves
 - **fmm2d** - fast multipole method in 2D
 - **FLAM** - fast linear algebra in MATLAB
+- **finufft** - nonuniform FFTs in 1D, 2D, and 3D (WIP)
 - **surfacefun** - computing on surfaces
 - and others (export\_fig, kdtree, ...)
 
@@ -90,6 +107,9 @@ Runs `.m` files, aiming for MATLAB compatibility.
 - Optional native addon for LAPACK/FFTW performance
 - Supports matrices, structs, cell arrays, function handles, classes, complex numbers, plotting, ...
 - Goal: full MATLAB core syntax and functionality
+
+```numbl-repl
+```
 
 ---
 
@@ -123,7 +143,7 @@ y = a + b           →  y = $rt.binop("+", a, b)
 A(1:end, 2)         →  $rt.index(A, [$rt.range(1, 1, $rt.END), 2])
 ```
 
-Functions are specialized per argument type — `f(3)` and `f([1,2,3])` compile to different JS functions.
+Functions are specialized per argument type: `f(3)` and `f([1,2,3])` compile to different JS functions.
 
 ---
 
@@ -148,7 +168,7 @@ In MATLAB, `f(x)` can mean different things depending on what `x` is:
 
 - `plot(matrix)` → plot columns as series
 - `plot(chebfun)` → chebfun's overloaded `plot`
-- `A(1)` — function call or array indexing? Depends on what `A` is
+- `A(1)` -- function call or array indexing? Depends on what `A` is
 
 When types are known, numbl resolves the correct function upfront. Otherwise, it dispatches at runtime, checking for class method overloads first.
 
@@ -156,7 +176,7 @@ When types are known, numbl resolves the correct function upfront. Otherwise, it
 
 ## How they fit together
 
-- **mip** works in both MATLAB and numbl — same packages, same workflow
+- **mip** works in both MATLAB and numbl; same packages, same workflow
 - **numbl** uses mip under the hood to install and load packages
 
 ---
@@ -179,7 +199,7 @@ fprintf('residual: %e\n', norm(A*x - b));
 
 ## Demo - chebfun in the browser
 
-chebfun: ~2,300 .m files, ~160,000 lines of code (excluding tests) — running unmodified in the browser.
+chebfun: ~2,300 .m files, ~160,000 lines of code (excluding tests); running unmodified in the browser.
 
 ```numbl-embed
 mip load chebfun;

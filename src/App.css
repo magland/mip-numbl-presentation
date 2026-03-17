@@ -30,6 +30,25 @@
   min-height: 0;
 }
 
+.slide-canvas-split {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 2rem;
+}
+
+.slide-canvas-split .slide-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.slide-canvas-split .slide-embed {
+  flex: 1;
+  min-width: 0;
+}
+
 .slide-content {
   width: 100%;
   text-align: left;
