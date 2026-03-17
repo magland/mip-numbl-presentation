@@ -138,6 +138,101 @@
   height: auto;
 }
 
+/* Mobile layout — content flows naturally at viewport width */
+.slide-mobile {
+  overflow-y: auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.slide-canvas-mobile {
+  width: 100%;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-canvas-mobile .slide-content h1 {
+  font-size: 1.8rem;
+}
+
+.slide-canvas-mobile .slide-content h2 {
+  font-size: 1.5rem;
+}
+
+.slide-canvas-mobile .slide-content h3 {
+  font-size: 1.2rem;
+}
+
+.slide-canvas-mobile .slide-content p,
+.slide-canvas-mobile .slide-content ul,
+.slide-canvas-mobile .slide-content ol {
+  font-size: 1rem;
+}
+
+.slide-canvas-mobile .slide-content pre code {
+  font-size: 0.8rem;
+}
+
+.slide-canvas-split-mobile {
+  flex-direction: column;
+}
+
+.slide-embed-mobile {
+  width: 100%;
+  height: 50vh;
+  min-height: 300px;
+}
+
+/* Mobile navigation bar */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 819px) {
+  .mobile-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: #f8f8f8;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .mobile-nav-btn {
+    appearance: none;
+    border: none;
+    background: #e8e8e8;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    color: #333;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .mobile-nav-btn:active {
+    background: #d0d0d0;
+  }
+
+  .mobile-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .mobile-nav-count {
+    font-size: 0.9rem;
+    color: #666;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+  }
+
+  .slide-number {
+    display: none;
+  }
+}
+
 .slide-number {
   position: absolute;
   bottom: 1rem;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { parseSlides } from "./parseSlides";
 import { Slide } from "./Slide";
 import slidesRaw from "./slides.md?raw";
@@ -44,9 +44,65 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, [go]);
 
+  // Swipe navigation
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const deckRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = deckRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      touchStart.current = { x: t.clientX, y: t.clientY };
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!touchStart.current) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - touchStart.current.x;
+      const dy = t.clientY - touchStart.current.y;
+      touchStart.current = null;
+
+      // Only count horizontal swipes (ignore vertical scrolling)
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0) go(1);
+        else go(-1);
+      }
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [go]);
+
   return (
-    <div className="deck">
+    <div className="deck" ref={deckRef}>
       <Slide slide={slides[index]} />
+      <nav className="mobile-nav">
+        <button
+          className="mobile-nav-btn"
+          onClick={() => go(-1)}
+          disabled={index === 0}
+          aria-label="Previous slide"
+        >
+          ‹
+        </button>
+        <span className="mobile-nav-count">
+          {index + 1} / {slides.length}
+        </span>
+        <button
+          className="mobile-nav-btn"
+          onClick={() => go(1)}
+          disabled={index === slides.length - 1}
+          aria-label="Next slide"
+        >
+          ›
+        </button>
+      </nav>
       <div className="slide-number">
         {index + 1} / {slides.length}
       </div>

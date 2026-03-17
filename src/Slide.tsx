@@ -1,9 +1,10 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { NumblEmbed } from "./NumblEmbed";
 import type { SlideData } from "./parseSlides";
 
 const DESIGN_W = 1200;
 const DESIGN_H = 820;
+const MOBILE_BREAKPOINT = 820;
 
 interface SlideProps {
   slide: SlideData;
@@ -11,22 +12,57 @@ interface SlideProps {
 
 export function Slide({ slide }: SlideProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0);
+  const [mobile, setMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT);
 
   const fit = useCallback(() => {
     if (!containerRef.current) return;
     const parent = containerRef.current.parentElement;
     if (!parent) return;
-    const sx = parent.clientWidth / DESIGN_W;
-    const sy = parent.clientHeight / DESIGN_H;
-    setScale(Math.min(sx, sy));
+    const isMobile = parent.clientWidth < MOBILE_BREAKPOINT;
+    setMobile(isMobile);
+    if (!isMobile) {
+      const sx = parent.clientWidth / DESIGN_W;
+      const sy = parent.clientHeight / DESIGN_H;
+      setScale(Math.min(sx, sy));
+    }
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     fit();
+  }, [fit]);
+
+  useEffect(() => {
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
   }, [fit]);
+
+  if (mobile) {
+    return (
+      <div className="slide slide-mobile">
+        <div
+          ref={containerRef}
+          className={`slide-canvas-mobile${slide.layout === "split" ? " slide-canvas-split-mobile" : ""}`}
+        >
+          {slide.html && (
+            <div
+              className="slide-content"
+              dangerouslySetInnerHTML={{ __html: slide.html }}
+            />
+          )}
+          {slide.embed && (
+            <div className="slide-embed-mobile">
+              {"mode" in slide.embed ? (
+                <NumblEmbed mode={slide.embed.mode} />
+              ) : (
+                <NumblEmbed script={slide.embed.script} />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="slide">
