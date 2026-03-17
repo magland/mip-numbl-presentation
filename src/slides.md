@@ -8,9 +8,9 @@ CCM Brown Bag Lunch
 
 ## Why MATLAB?
 
-- Interactive, intuitive syntax for numerical work
+- Intuitive syntax purpose-built for numerical work
+- Not bolted onto a general-purpose language — simpler and more direct
 - Excellent built-in linear algebra
-- Large existing codebase in applied math and engineering
 - Plotting and visualization just work
 
 ```matlab
@@ -25,37 +25,31 @@ fprintf('residual: %e\n', norm(A*x - b));
 
 ---
 
-## MATLAB's place in the world
+## Why MATLAB (still)?
 
 - Most of us use Python, Julia, or other languages, and for good reason
 - But MATLAB is still widely used in applied math and engineering
 - Important existing code is written in MATLAB (e.g., chebfun)
-- Not bolted onto a general-purpose language
-- Simpler and more direct for numerical work
-
-So what's missing?
 
 ---
 
-## The problem
+## What's holding it back
 
 - **No package manager.**
   - Installing dependencies means copying folders and editing paths
 - **Expensive licenses.**
   - Collaborators and reviewers may not have access
-- **Tied to the cloud or desktop.**
+- **No in-browser option.**
   - MATLAB Online exists but runs on a server, not in the browser
 - **MEX distribution is painful.**
   - Precompiled binaries for every platform
 
 ---
 
-## Two new tools (early stage, work in progress)
+## Two new complementary tools (early stage, work in progress)
 
 - **mip** - a package manager for MATLAB and MEX
-- **numbl** - an open-source MATLAB that runs in the browser and on the command line
-
-Complementary and tightly integrated.
+- **numbl** - runs .m files in the browser and on the command line
 
 ---
 
@@ -87,7 +81,7 @@ Currently published packages include:
 
 ## numbl: open-source numerical computing
 
-An open-source computing environment that runs `.m` files, aiming for MATLAB compatibility.
+Runs `.m` files, aiming for MATLAB compatibility.
 
 - Can run in **browser**. All computation happens locally, no server needed
 - Runs on the **command line**
@@ -101,7 +95,7 @@ An open-source computing environment that runs `.m` files, aiming for MATLAB com
 
 `.m` source code passes through a compilation pipeline:
 
-Lexer → Parser → Lowering/IR → Codegen → JavaScript
+Lexer → Parser → Lowering/IR → Codegen → JavaScript Engine
 
 - **Upfront compilation** including type inference where possible
 - **JIT compilation** when types are not known at compile time
@@ -110,16 +104,64 @@ Lexer → Parser → Lowering/IR → Codegen → JavaScript
 
 ---
 
-## Why both?
+## numbl: what the generated code looks like
 
-- **mip** - package distribution and dependency management
-- **numbl** - run `.m` code without a license, in the browser or on the command line
-- numbl uses mip to manage its packages
-- mip also works directly in MATLAB.
+Scalars → JS numbers. Matrices → `Float64Array` with shape. Structs → `Map`.
+
+When types are known, numbl emits direct JS:
+
+```
+y = x * 2          →  y = (x * 2)
+```
+
+When types are unknown, runtime dispatch:
+
+```
+y = a + b           →  y = $rt.binop("+", a, b)
+A(1:end, 2)         →  $rt.index(A, [$rt.range(1, 1, $rt.END), 2])
+```
+
+Functions are specialized per argument type — `f(3)` and `f([1,2,3])` compile to different JS functions.
+
+---
+
+## numbl: type inference
+
+MATLAB is dynamically typed. Without type info, every operation goes through runtime dispatch.
+
+Type inference figures out types at compile time:
+
+- Track assignments: `x = 5` → `x` is a scalar
+- Propagate: `y = x + 1` → `y` is a scalar
+- Specialize calls: `f` called with a matrix → compile a matrix-specific version
+- Builtin return types: `size(A)` → row vector, `length(A)` → scalar
+
+Inference succeeds → fast JS. Otherwise → runtime dispatch (correct but slower).
+
+---
+
+## numbl: function dispatch
+
+In MATLAB, `f(x)` can mean different things depending on what `x` is:
+
+- `plot(matrix)` → plot columns as series
+- `plot(chebfun)` → chebfun's overloaded `plot`
+- `A(1)` — function call or array indexing? Depends on what `A` is
+
+When types are known, numbl resolves the correct function upfront. Otherwise, it dispatches at runtime, checking for class method overloads first.
+
+---
+
+## How they fit together
+
+- **mip** works in both MATLAB and numbl — same packages, same workflow
+- **numbl** uses mip under the hood to install and load packages
 
 ---
 
 ## Demo - running fully in the browser
+
+This runs entirely in your browser.
 
 ```numbl-embed
 % Solve Ax = b with a random SPD matrix
@@ -134,6 +176,8 @@ fprintf('residual: %e\n', norm(A*x - b));
 ---
 
 ## Demo - chebfun in the browser
+
+chebfun: ~2,300 .m files, ~160,000 lines of code (excluding tests) — running unmodified in the browser.
 
 ```numbl-embed
 mip load chebfun;
@@ -180,6 +224,8 @@ title('Surface');
 
 ## Demo - FINUFFT (via WebAssembly)
 
+A compiled C++ library running in the browser via WebAssembly.
+
 ```numbl-embed
 mip load finufft;
 
@@ -218,6 +264,15 @@ npx numbl                          % interactive REPL
 
 ---
 
+## Revisiting the problems
+
+- **No package manager** → `mip install chebfun`
+- **Expensive licenses** → numbl is open-source, free to use, no license required
+- **No in-browser option** → numbl runs entirely client-side in the browser
+- **MEX distribution is painful** → mip provides precompiled binaries per platform
+
+---
+
 ## Future work - mip
 
 - Develop the automated build system across all supported architectures
@@ -229,22 +284,20 @@ npx numbl                          % interactive REPL
 ## Future work - numbl
 
 - More functionality needed to fully run complex packages like chebfun, surfacefun
-- **Speed is the main limitation**
-  - Simple linear algebra (LAPACK/OpenBLAS): comparable to MATLAB
-  - Complex data structures and interpreted code: ~10x slower
-- MATLAB has highly optimized JIT for untyped code. numbl has JIT but needs full type inference to close the gap
-- JavaScript engines are fast but still slower than native code for tight loops
-- Focus going forward: type inference, JIT optimization, and broader language coverage
+- **Performance: already competitive for linear algebra** (LAPACK/OpenBLAS)
+  - Code with complex data structures and runtime-resolved features: ~10x slower today
+  - JavaScript engines are fast but still slower than native code for tight loops
+  - Improving this with type inference and JIT optimization
 
 ---
 
 ## Thank you
 
-Jeremy Magland and Dan Fortunato
+We welcome feedback and contributions! Reach out to Dan or Jeremy.
 
-We welcome feedback and contributions!
-
+- Try it now: `npx numbl`
 - [numbl.org](https://numbl.org)
+- [mip.sh](https://mip.sh) (coming soon)
 - [github.com/mip-org/mip-core](https://github.com/mip-org/mip-core)
 
 Initial inspiration for numbl from [runmat](https://github.com/runmat-org/runmat).

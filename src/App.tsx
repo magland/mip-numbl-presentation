@@ -32,6 +32,12 @@ export default function App() {
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
         e.preventDefault();
         go(-1);
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        setIndex(0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        setIndex(slides.length - 1);
       }
     };
     window.addEventListener("keydown", onKey);
