@@ -306,7 +306,8 @@ npx numbl                          % interactive REPL
 ## Future work - numbl
 
 - More functionality needed to fully run complex packages like chebfun, surfacefun
-- **Performance: already competitive for linear algebra** (LAPACK/OpenBLAS)
+- **Performance
+  - Competitive for linear algebra (LAPACK/OpenBLAS)
   - Code with complex data structures and runtime-resolved features: ~10x slower today
   - JavaScript engines are fast but still slower than native code for tight loops
   - Improving this with type inference and JIT optimization
