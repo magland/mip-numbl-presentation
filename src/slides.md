@@ -2,7 +2,9 @@
 
 Jeremy Magland and Dan Fortunato
 
-CCM Brown Bag Lunch
+CCM Brown Bag Lunch Talk
+
+17 March 2026
 
 ---
 
