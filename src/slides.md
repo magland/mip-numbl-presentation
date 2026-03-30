@@ -202,6 +202,7 @@ fprintf('residual: %e\n', norm(A*x - b));
 chebfun: ~2,300 .m files, ~160,000 lines of code (excluding tests); running unmodified in the browser.
 
 ```numbl-embed
+mip install chebfun;
 mip load chebfun;
 
 f = chebfun(@(x) cos(10*x) .* exp(-x.^2));
@@ -249,6 +250,7 @@ title('Surface');
 A compiled C++ library running in the browser via WebAssembly.
 
 ```numbl-embed
+mip install finufft;
 mip load finufft;
 
 % 1D type 1: nonuniform points -> Fourier modes
